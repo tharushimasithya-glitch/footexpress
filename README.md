@@ -1,1 +1,767 @@
-# footexpress
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FootExpress | Step Into Speed & Comfort</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#00f0ff',
+                            orange: '#ff5500',
+                            dark: '#0b0f19',
+                            card: '#151c2c',
+                            border: '#232d42'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+        .neon-glow-blue {
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);
+        }
+        .neon-glow-orange {
+            box-shadow: 0 0 20px rgba(255, 85, 0, 0.4);
+        }
+        .text-glow {
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #232d42;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff5500;
+        }
+        .glass {
+            background: rgba(21, 28, 44, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-orange selection:text-white">
+
+    <!-- Notification Toast Alert Container -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Announcement Bar -->
+    <div class="bg-gradient-to-r from-brand-orange via-red-600 to-brand-orange text-white text-xs md:text-sm font-semibold py-2 px-4 text-center tracking-wide flex items-center justify-center gap-2 shadow-md z-40">
+        <i class="fa-solid fa-bolt animate-bounce"></i>
+        <span>EXPRESS FLASH SALE: Get 20% OFF on all sports footwear with code <b>EXPRESS20</b></span>
+    </div>
+
+    <!-- Sticky Header Navbar -->
+    <header class="sticky top-0 z-30 glass border-b border-brand-border/60 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- Brand Logo -->
+                <a href="#" class="flex items-center gap-2 group">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-orange to-brand-blue flex items-center justify-center text-white font-black text-xl shadow-lg transform group-hover:rotate-6 transition-transform">
+                        <i class="fa-solid fa-shoe-prints"></i>
+                    </div>
+                    <span class="text-2xl font-black tracking-wider uppercase text-white">
+                        Foot<span class="text-brand-orange">Express</span>
+                    </span>
+                </a>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex items-center space-x-8 font-medium text-sm">
+                    <button onclick="filterCategory('all')" class="text-white hover:text-brand-orange transition-colors">Home</button>
+                    <button onclick="filterCategory('men')" class="text-gray-300 hover:text-brand-orange transition-colors">Men</button>
+                    <button onclick="filterCategory('women')" class="text-gray-300 hover:text-brand-orange transition-colors">Women</button>
+                    <button onclick="filterCategory('kids')" class="text-gray-300 hover:text-brand-orange transition-colors">Kids</button>
+                    <button onclick="filterCategory('running')" class="text-gray-300 hover:text-brand-orange transition-colors">New Arrivals</button>
+                    <button onclick="filterCategory('casual')" class="text-brand-orange font-bold hover:underline transition-all">Casual</button>
+                </nav>
+
+                <!-- Search Bar & Actions -->
+                <div class="flex items-center gap-4">
+                    <!-- Live Search Input -->
+                    <div class="relative hidden sm:block w-48 md:w-64">
+                        <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search shoes..." 
+                            class="w-full bg-brand-dark/90 border border-brand-border rounded-full py-2 pl-10 pr-4 text-xs text-gray-200 placeholder-gray-400 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                    </div>
+
+                    <!-- Wishlist Counter Icon -->
+                    <button onclick="toggleWishlistModal()" class="relative text-gray-300 hover:text-brand-orange p-2 transition-colors" title="Wishlist">
+                        <i class="fa-regular fa-heart text-xl"></i>
+                        <span id="wishlistBadge" class="absolute -top-1 -right-1 bg-brand-orange text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center opacity-0 transition-opacity">0</span>
+                    </button>
+
+                    <!-- Cart Toggle Button -->
+                    <button onclick="toggleCartDrawer()" class="relative bg-brand-orange hover:bg-orange-600 text-white p-2.5 rounded-xl font-medium flex items-center gap-2 shadow-lg hover:shadow-orange-500/30 transition-all">
+                        <i class="fa-solid fa-cart-shopping text-base"></i>
+                        <span id="cartCountBadge" class="bg-white text-brand-dark font-extrabold text-xs px-2 py-0.5 rounded-full">0</span>
+                    </button>
+
+                    <!-- Mobile Menu Trigger Button -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden text-gray-300 hover:text-white p-2">
+                        <i class="fa-solid fa-bars text-xl" id="menuIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-brand-card border-b border-brand-border px-4 pt-2 pb-6 space-y-3">
+            <div class="relative mb-3">
+                <input type="text" id="mobileSearchInput" oninput="handleMobileSearch()" placeholder="Search shoes..." 
+                    class="w-full bg-brand-dark border border-brand-border rounded-lg py-2 pl-9 pr-4 text-sm text-gray-200 focus:outline-none focus:border-brand-blue">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+            </div>
+            <button onclick="filterCategory('all'); toggleMobileMenu()" class="block w-full text-left py-2 text-white font-medium hover:text-brand-orange">Home</button>
+            <button onclick="filterCategory('men'); toggleMobileMenu()" class="block w-full text-left py-2 text-gray-300 font-medium hover:text-brand-orange">Men's Collection</button>
+            <button onclick="filterCategory('women'); toggleMobileMenu()" class="block w-full text-left py-2 text-gray-300 font-medium hover:text-brand-orange">Women's Collection</button>
+            <button onclick="filterCategory('kids'); toggleMobileMenu()" class="block w-full text-left py-2 text-gray-300 font-medium hover:text-brand-orange">Kids Gear</button>
+            <button onclick="filterCategory('running'); toggleMobileMenu()" class="block w-full text-left py-2 text-gray-300 font-medium hover:text-brand-orange">Running Shoes</button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow">
+        
+        <!-- Hero Section -->
+        <section class="relative overflow-hidden pt-8 pb-16 md:py-24 bg-gradient-to-b from-brand-dark via-brand-card/40 to-brand-dark border-b border-brand-border/40">
+            <div class="absolute -top-40 -left-40 w-96 h-96 bg-brand-blue/15 rounded-full filter blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-brand-orange/15 rounded-full filter blur-3xl pointer-events-none"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    
+                    <!-- Left Hero Text Content -->
+                    <div class="text-center lg:text-left space-y-6">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-orange/10 border border-brand-orange/30 text-brand-orange text-xs font-bold uppercase tracking-wider">
+                            <i class="fa-solid fa-truck-fast animate-pulse"></i> Fast Express Delivery & Cash on Delivery Available
+                        </div>
+                        <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-white leading-tight">
+                            STEP INTO <br>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-white to-brand-orange text-glow">
+                                SPEED & COMFORT
+                            </span>
+                        </h1>
+                        <p class="text-gray-400 text-base sm:text-lg max-w-xl mx-auto lg:mx-0">
+                            Engineered for high performance and high street style. Discover FootExpress signature responsive cushioning and ultralight designs with optional Pay After Delivery.
+                        </p>
+
+                        <!-- CTA Buttons -->
+                        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+                            <a href="#shop" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-brand-orange to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-extrabold rounded-xl shadow-lg neon-glow-orange transition-all duration-300 flex items-center justify-center gap-3">
+                                <span>EXPLORE CATALOG</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                            <button onclick="openQuickView(1)" class="w-full sm:w-auto px-8 py-4 bg-brand-card hover:bg-brand-border text-white border border-brand-border font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-play text-xs text-brand-blue"></i>
+                                <span>Featured Shoe</span>
+                            </button>
+                        </div>
+
+                        <!-- Trust Metrics -->
+                        <div class="grid grid-cols-3 gap-4 pt-8 border-t border-brand-border/60 max-w-md mx-auto lg:mx-0 text-center lg:text-left">
+                            <div>
+                                <h3 class="text-2xl font-black text-white">24-48H</h3>
+                                <p class="text-xs text-gray-400">Islandwide Express</p>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-black text-brand-blue">COD</h3>
+                                <p class="text-xs text-gray-400">Pay After Delivery</p>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-black text-white">30 Day</h3>
+                                <p class="text-xs text-gray-400">Easy Guarantee</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Interactive Featured Shoe Card -->
+                    <div class="relative flex justify-center items-center">
+                        <div class="w-full max-w-md bg-gradient-to-b from-brand-card to-brand-dark p-6 rounded-3xl border border-brand-border/80 neon-glow-blue relative transform hover:-rotate-1 transition-transform duration-500">
+                            <span class="absolute top-4 right-4 bg-brand-blue text-brand-dark text-xs font-extrabold px-3 py-1 rounded-full uppercase">Top Rated</span>
+                            <div class="h-64 sm:h-72 flex items-center justify-center overflow-hidden my-4 relative group">
+                                <img id="heroShoeImg" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80" alt="Nike Air Max Red" class="w-full h-full object-contain filter drop-shadow-2xl group-hover:scale-105 transition-transform duration-500">
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <h2 class="text-xl font-extrabold text-white">Pulse Velocity Pro X</h2>
+                                    <span class="text-xl font-extrabold text-brand-orange">Rs. 18,500</span>
+                                </div>
+                                <p class="text-xs text-gray-400">Dynamic responsive foam with breathable air-mesh construction.</p>
+                                <button onclick="addToCart(1)" class="w-full py-3 bg-brand-blue hover:bg-cyan-400 text-brand-dark font-black rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-cart-plus"></i> ADD TO EXPRESS CART
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Product Catalog Section -->
+        <section id="shop" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            
+            <!-- Category Filter Header -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                <div>
+                    <h2 class="text-3xl font-extrabold text-white tracking-tight">EXPLORE COLLECTIONS</h2>
+                    <p class="text-sm text-gray-400">Choose your style, size, and athletic purpose.</p>
+                </div>
+
+                <!-- Category Pills -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar" id="categoryContainer">
+                    <button onclick="filterCategory('all')" class="cat-btn active bg-brand-orange text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider whitespace-nowrap transition-all shadow-md">All Shoes</button>
+                    <button onclick="filterCategory('running')" class="cat-btn bg-brand-card hover:bg-brand-border text-gray-300 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider whitespace-nowrap transition-all">Running</button>
+                    <button onclick="filterCategory('casual')" class="cat-btn bg-brand-card hover:bg-brand-border text-gray-300 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider whitespace-nowrap transition-all">Casual</button>
+                    <button onclick="filterCategory('formal')" class="cat-btn bg-brand-card hover:bg-brand-border text-gray-300 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider whitespace-nowrap transition-all">Formal</button>
+                    <button onclick="filterCategory('sport')" class="cat-btn bg-brand-card hover:bg-brand-border text-gray-300 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider whitespace-nowrap transition-all">Basketball / Sport</button>
+                </div>
+            </div>
+
+            <!-- Sort Bar -->
+            <div class="flex justify-between items-center bg-brand-card/60 p-4 rounded-xl border border-brand-border/60 mb-8 text-sm">
+                <span class="text-gray-400 font-medium text-xs sm:text-sm">Showing <b id="productCount" class="text-white">0</b> FootExpress products</span>
+                <div class="flex items-center gap-2">
+                    <label for="sortSelect" class="text-xs text-gray-400 font-medium hidden sm:inline">Sort By:</label>
+                    <select id="sortSelect" onchange="sortProducts()" class="bg-brand-dark border border-brand-border text-xs sm:text-sm text-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-brand-blue">
+                        <option value="featured">Featured First</option>
+                        <option value="low">Price: Low to High</option>
+                        <option value="high">Price: High to Low</option>
+                        <option value="rating">Customer Rating</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+                <!-- Dynamically Populated via JS -->
+            </div>
+            
+            <!-- Empty State Container -->
+            <div id="emptyState" class="hidden text-center py-16 space-y-4">
+                <i class="fa-solid fa-shoe-prints text-6xl text-gray-600"></i>
+                <h3 class="text-xl font-bold text-white">No footwear found</h3>
+                <p class="text-gray-400 text-sm">Try tweaking your search term or select another category filter.</p>
+                <button onclick="filterCategory('all')" class="px-6 py-2.5 bg-brand-orange text-white text-xs font-bold rounded-xl uppercase">Reset Filters</button>
+            </div>
+        </section>
+
+        <!-- Newsletter & Promo Banner -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="bg-gradient-to-r from-brand-card via-brand-dark to-brand-card rounded-3xl p-8 sm:p-12 border border-brand-border relative overflow-hidden text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl">
+                <div class="space-y-2 max-w-lg">
+                    <h3 class="text-2xl sm:text-3xl font-extrabold text-white">JOIN THE FOOTEXPRESS CLUB</h3>
+                    <p class="text-sm text-gray-400">Subscribe for secret drop alerts, exclusive discounts, and early access to limited edition sneakers.</p>
+                </div>
+                <form onsubmit="handleSubscribe(event)" class="w-full md:w-auto flex flex-col sm:flex-row gap-3">
+                    <input type="email" required placeholder="Enter your email address" class="bg-brand-dark border border-brand-border px-5 py-3 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-blue w-full sm:w-80">
+                    <button type="submit" class="px-6 py-3 bg-brand-orange hover:bg-orange-600 text-white font-extrabold rounded-xl transition-all shadow-md text-sm whitespace-nowrap">
+                        JOIN NOW
+                    </button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-brand-card border-t border-brand-border text-gray-400 text-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="space-y-4">
+                <a href="#" class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-brand-orange flex items-center justify-center text-white font-bold text-sm">
+                        <i class="fa-solid fa-shoe-prints"></i>
+                    </div>
+                    <span class="text-xl font-black text-white">Foot<span class="text-brand-orange">Express</span></span>
+                </a>
+                <p class="text-xs text-gray-400">Your #1 destination for high performance, luxury street-style sneakers and sports footwear delivered express with Cash on Delivery option.</p>
+                <div class="flex gap-4 text-base">
+                    <a href="#" class="hover:text-brand-blue transition-colors"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#" class="hover:text-brand-blue transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="hover:text-brand-blue transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="hover:text-brand-blue transition-colors"><i class="fa-brands fa-tiktok"></i></a>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-white font-bold mb-4 uppercase text-xs tracking-wider">Quick Links</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="#" onclick="filterCategory('men')" class="hover:text-white transition-colors">Men's Running Shoes</a></li>
+                    <li><a href="#" onclick="filterCategory('women')" class="hover:text-white transition-colors">Women's Streetwear</a></li>
+                    <li><a href="#" onclick="filterCategory('kids')" class="hover:text-white transition-colors">Kids Sports Edition</a></li>
+                    <li><a href="#" onclick="filterCategory('sport')" class="hover:text-white transition-colors">Basketball Shoes</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-white font-bold mb-4 uppercase text-xs tracking-wider">Customer Care</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="#" class="hover:text-white transition-colors">Order Tracking</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Shipping & Returns</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Cash On Delivery Terms</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Size Guide Reference</a></li>
+                </ul>
+            </div>
+
+            <div class="space-y-3">
+                <h4 class="text-white font-bold uppercase text-xs tracking-wider">Contact Express</h4>
+                <p class="text-xs"><i class="fa-solid fa-location-dot text-brand-orange mr-2"></i> FootExpress Hub, Tech Street, City Center</p>
+                <p class="text-xs"><i class="fa-solid fa-phone text-brand-blue mr-2"></i> +94 11 234 5678</p>
+                <p class="text-xs"><i class="fa-solid fa-envelope text-brand-orange mr-2"></i> tharushimasithya@gmail.com</p>
+            </div>
+        </div>
+        <div class="border-t border-brand-border/60 py-6 text-center text-xs text-gray-500">
+            &copy; 2026 FootExpress Inc. All rights reserved. Built with high performance web tech.
+        </div>
+    </footer>
+
+    <!-- CART SIDEBAR DRAWER -->
+    <div id="cartOverlay" onclick="toggleCartDrawer()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+    <aside id="cartDrawer" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-brand-card border-l border-brand-border z-50 transform translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
+        <!-- Cart Header -->
+        <div class="p-5 border-b border-brand-border flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bag-shopping text-brand-orange text-xl"></i>
+                <h3 class="text-lg font-bold text-white">Your Express Cart</h3>
+            </div>
+            <button onclick="toggleCartDrawer()" class="text-gray-400 hover:text-white text-lg p-1">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Free Shipping Progress -->
+        <div class="p-4 bg-brand-dark/80 border-b border-brand-border">
+            <div class="flex justify-between text-xs mb-1.5 font-semibold">
+                <span id="shippingGoalText" class="text-gray-300">Free Express Shipping</span>
+                <span id="shippingGoalAmount" class="text-brand-blue">Rs. 0 / 25,000</span>
+            </div>
+            <div class="w-full h-2 bg-brand-border rounded-full overflow-hidden">
+                <div id="shippingProgressBar" class="h-full bg-gradient-to-r from-brand-blue to-brand-orange w-0 transition-all duration-500"></div>
+            </div>
+        </div>
+
+        <!-- Cart Items Container -->
+        <div id="cartItemsContainer" class="flex-grow overflow-y-auto p-5 space-y-4">
+            <!-- Dynamic Cart Content -->
+        </div>
+
+        <!-- Cart Summary Footer -->
+        <div class="p-5 border-t border-brand-border space-y-4 bg-brand-dark/90">
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between text-gray-400">
+                    <span>Subtotal</span>
+                    <span id="cartSubtotal" class="font-bold text-white">Rs. 0</span>
+                </div>
+                <div class="flex justify-between text-gray-400">
+                    <span>Express Delivery</span>
+                    <span id="cartShippingFee" class="font-bold text-white">Rs. 500</span>
+                </div>
+                <div class="flex justify-between text-base font-extrabold text-white border-t border-brand-border pt-2">
+                    <span>Total Amount</span>
+                    <span id="cartTotal" class="text-brand-orange text-lg">Rs. 0</span>
+                </div>
+            </div>
+
+            <button onclick="openCheckoutModal()" class="w-full py-3.5 bg-gradient-to-r from-brand-orange to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-extrabold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                <span>PROCEED TO CHECKOUT</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- PRODUCT QUICK VIEW MODAL -->
+    <div id="quickViewModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-brand-card border border-brand-border rounded-3xl max-w-3xl w-full p-6 sm:p-8 relative shadow-2xl max-h-[90vh] overflow-y-auto">
+            <button onclick="closeQuickView()" class="absolute top-4 right-4 bg-brand-dark text-gray-400 hover:text-white w-9 h-9 rounded-full flex items-center justify-center border border-brand-border z-10">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="quickViewContent">
+                <!-- Dynamically injected -->
+            </div>
+        </div>
+    </div>
+
+    <!-- WISHLIST MODAL -->
+    <div id="wishlistModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-brand-card border border-brand-border rounded-3xl max-w-xl w-full p-6 relative shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-heart text-brand-orange"></i> Saved Wishlist
+                </h3>
+                <button onclick="toggleWishlistModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div id="wishlistContainer" class="max-h-80 overflow-y-auto space-y-4">
+                <!-- Wishlist Content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- CHECKOUT & CASH ON DELIVERY MODAL -->
+    <div id="checkoutModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-brand-card border border-brand-border rounded-3xl max-w-lg w-full p-6 sm:p-8 relative shadow-2xl max-h-[95vh] overflow-y-auto">
+            <button onclick="closeCheckoutModal()" class="absolute top-4 right-4 bg-brand-dark text-gray-400 hover:text-white w-8 h-8 rounded-full flex items-center justify-center border border-brand-border z-10">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Step 1: Shipping & Payment Method Form -->
+            <div id="checkoutFormStep">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-brand-orange/20 text-brand-orange flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-truck-ramp-box"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-white">Express Checkout</h3>
+                        <p class="text-xs text-gray-400">Provide delivery details & place your order.</p>
+                    </div>
+                </div>
+
+                <!-- Formspree Endpoint -->
+                <form id="codOrderForm" action="https://formspree.io/f/moeepdkl" method="POST" onsubmit="handleOrderSubmission(event)" class="space-y-4 text-xs">
+                    
+                    <input type="hidden" name="Order Details" id="hiddenOrderDetails">
+                    <input type="hidden" name="Total Payable Amount" id="hiddenTotalAmount">
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-gray-300 font-semibold mb-1">First Name *</label>
+                            <input type="text" name="First Name" required placeholder="John" class="w-full bg-brand-dark border border-brand-border rounded-lg p-2.5 text-white focus:outline-none focus:border-brand-orange">
+                        </div>
+                        <div>
+                            <label class="block text-gray-300 font-semibold mb-1">Last Name *</label>
+                            <input type="text" name="Last Name" required placeholder="Doe" class="w-full bg-brand-dark border border-brand-border rounded-lg p-2.5 text-white focus:outline-none focus:border-brand-orange">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-gray-300 font-semibold mb-1">Phone Number *</label>
+                            <input type="tel" name="Phone Number" required placeholder="+94 7X XXX XXXX" class="w-full bg-brand-dark border border-brand-border rounded-lg p-2.5 text-white focus:outline-none focus:border-brand-orange">
+                        </div>
+                        <div>
+                            <label class="block text-gray-300 font-semibold mb-1">Email Address *</label>
+                            <input type="email" name="Email Address" required placeholder="you@example.com" class="w-full bg-brand-dark border border-brand-border rounded-lg p-2.5 text-white focus:outline-none focus:border-brand-orange">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-300 font-semibold mb-1">Delivery Address *</label>
+                        <textarea name="Delivery Address" required rows="2" placeholder="House No, Street, City" class="w-full bg-brand-dark border border-brand-border rounded-lg p-2.5 text-white focus:outline-none focus:border-brand-orange"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 bg-brand-orange hover:bg-orange-600 text-white font-extrabold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                        <span>PLACE CASH ON DELIVERY ORDER</span>
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        const products = [
+            { id: 1, name: "Pulse Velocity Pro X", category: "running", price: 18500, rating: 4.9, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80", desc: "Dynamic responsive foam with breathable air-mesh construction." },
+            { id: 2, name: "Street Runner Elite", category: "running", price: 14200, rating: 4.7, image: "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=800&q=80", desc: "Ultra-lightweight everyday running shoe built for urban tracks." },
+            { id: 3, name: "Urban Flex Casual", category: "casual", price: 12000, rating: 4.5, image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=800&q=80", desc: "Sleek low-profile styling paired with supreme daily comfort." },
+            { id: 4, name: "Executive Leather Oxford", category: "formal", price: 21000, rating: 4.8, image: "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?auto=format&fit=crop&w=800&q=80", desc: "Genuine leather formal shoes designed for corporate professionals." },
+            { id: 5, name: "Court Master Basketball", category: "sport", price: 19500, rating: 4.9, image: "https://images.unsplash.com/photo-1579338559194-a162d19bf842?auto=format&fit=crop&w=800&q=80", desc: "High ankle support with supreme court grip and shock absorption." },
+            { id: 6, name: "CloudWalk Women Runner", category: "running", price: 16000, rating: 4.6, image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=800&q=80", desc: "Cushioned arch support designed specifically for active women." }
+        ];
+
+        let cart = [];
+        let wishlist = [];
+        let currentFilter = 'all';
+
+        function renderProducts(items) {
+            const grid = document.getElementById('productGrid');
+            const emptyState = document.getElementById('emptyState');
+            const countElem = document.getElementById('productCount');
+            
+            countElem.innerText = items.length;
+            grid.innerHTML = '';
+
+            if (items.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            items.forEach(p => {
+                grid.innerHTML += `
+                    <div class="bg-brand-card border border-brand-border rounded-2xl p-4 flex flex-col justify-between hover:border-brand-blue transition-all group shadow-lg">
+                        <div class="relative h-48 flex items-center justify-center bg-brand-dark/50 rounded-xl overflow-hidden mb-4">
+                            <img src="${p.image}" alt="${p.name}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300">
+                            <button onclick="toggleWishlist(${p.id})" class="absolute top-3 right-3 bg-brand-card/80 text-gray-300 hover:text-brand-orange w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                <i class="${wishlist.includes(p.id) ? 'fa-solid text-brand-orange' : 'fa-regular'} fa-heart"></i>
+                            </button>
+                        </div>
+                        <div class="space-y-2 flex-grow">
+                            <div class="flex justify-between items-center text-xs text-gray-400">
+                                <span class="uppercase tracking-wider">${p.category}</span>
+                                <span class="text-amber-400 font-semibold"><i class="fa-solid fa-star mr-1"></i>${p.rating}</span>
+                            </div>
+                            <h3 class="text-base font-bold text-white">${p.name}</h3>
+                            <p class="text-xs text-gray-400 line-clamp-2">${p.desc}</p>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-brand-border/60 flex items-center justify-between">
+                            <span class="text-brand-orange font-extrabold text-base">Rs. ${p.price.toLocaleString()}</span>
+                            <button onclick="addToCart(${p.id})" class="px-4 py-2 bg-brand-blue hover:bg-cyan-400 text-brand-dark font-black text-xs rounded-lg transition-all flex items-center gap-1.5">
+                                <i class="fa-solid fa-cart-plus"></i> ADD
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterCategory(cat) {
+            currentFilter = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-brand-orange', 'text-white');
+                btn.classList.add('bg-brand-card', 'text-gray-300');
+            });
+            event.target.classList.add('active', 'bg-brand-orange', 'text-white');
+            event.target.classList.remove('bg-brand-card', 'text-gray-300');
+
+            if (cat === 'all') {
+                renderProducts(products);
+            } else {
+                renderProducts(products.filter(p => p.category === cat));
+            }
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
+            renderProducts(filtered);
+        }
+
+        function handleMobileSearch() {
+            const query = document.getElementById('mobileSearchInput').value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
+            renderProducts(filtered);
+        }
+
+        function sortProducts() {
+            const sortBy = document.getElementById('sortSelect').value;
+            let sorted = [...products];
+            if (sortBy === 'low') sorted.sort((a, b) => a.price - b.price);
+            else if (sortBy === 'high') sorted.sort((a, b) => b.price - a.price);
+            else if (sortBy === 'rating') sorted.sort((a, b) => b.rating - a.rating);
+            renderProducts(sorted);
+        }
+
+        function addToCart(id) {
+            const item = products.find(p => p.id === id);
+            const existing = cart.find(c => c.id === id);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ ...item, qty: 1 });
+            }
+            updateCartUI();
+            showToast(`Added ${item.name} to cart!`, 'success');
+        }
+
+        function updateCartUI() {
+            const countBadge = document.getElementById('cartCountBadge');
+            const container = document.getElementById('cartItemsContainer');
+            const subtotalElem = document.getElementById('cartSubtotal');
+            const totalElem = document.getElementById('cartTotal');
+            const progressBar = document.getElementById('shippingProgressBar');
+            const shippingAmount = document.getElementById('shippingGoalAmount');
+
+            const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+            countBadge.innerText = totalCount;
+
+            container.innerHTML = '';
+            if (cart.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500 py-8 text-xs">Your express cart is currently empty.</p>';
+            }
+
+            let subtotal = 0;
+            cart.forEach(item => {
+                subtotal += item.price * item.qty;
+                container.innerHTML += `
+                    <div class="flex items-center gap-3 bg-brand-dark/60 p-3 rounded-xl border border-brand-border">
+                        <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-contain bg-brand-card rounded-lg p-1">
+                        <div class="flex-grow">
+                            <h4 class="text-white font-bold text-xs">${item.name}</h4>
+                            <p class="text-brand-orange font-bold text-xs">Rs. ${item.price.toLocaleString()}</p>
+                            <div class="flex items-center gap-2 mt-1">
+                                <button onclick="changeQty(${item.id}, -1)" class="w-5 h-5 bg-brand-card text-white rounded flex items-center justify-center text-xs">-</button>
+                                <span class="text-xs font-bold">${item.qty}</span>
+                                <button onclick="changeQty(${item.id}, 1)" class="w-5 h-5 bg-brand-card text-white rounded flex items-center justify-center text-xs">+</button>
+                            </div>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" class="text-gray-500 hover:text-red-500 text-xs p-1">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+
+            const shippingFee = subtotal > 25000 || subtotal === 0 ? 0 : 500;
+            const finalTotal = subtotal + (subtotal > 0 ? shippingFee : 0);
+
+            subtotalElem.innerText = `Rs. ${subtotal.toLocaleString()}`;
+            document.getElementById('cartShippingFee.innerText').innerText = shippingFee === 0 ? 'FREE' : 'Rs. 500';
+            totalElem.innerText = `Rs. ${finalTotal.toLocaleString()}`;
+
+            let progress = (subtotal / 25000) * 100;
+            if (progress > 100) progress = 100;
+            progressBar.style.width = `${progress}%`;
+            shippingAmount.innerText = `Rs. ${subtotal.toLocaleString()} / 25,000`;
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(c => c.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    cart = cart.filter(c => c.id !== id);
+                }
+                updateCartUI();
+            }
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(c => c.id !== id);
+            updateCartUI();
+        }
+
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cartDrawer');
+            const overlay = document.getElementById('cartOverlay');
+            drawer.classList.toggle('translate-x-full');
+            overlay.classList.toggle('opacity-0');
+            overlay.classList.toggle('pointer-events-none');
+        }
+
+        function toggleWishlist(id) {
+            if (wishlist.includes(id)) {
+                wishlist = wishlist.filter(item => item !== id);
+                showToast('Removed from wishlist', 'info');
+            } else {
+                wishlist.push(id);
+                showToast('Added to wishlist!', 'success');
+            }
+            document.getElementById('wishlistBadge.innerText').innerText = wishlist.length;
+            renderProducts(products);
+        }
+
+        function toggleWishlistModal() {
+            const modal = document.getElementById('wishlistModal');
+            const container = document.getElementById('wishlistContainer');
+            container.innerHTML = '';
+            
+            if (wishlist.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500 text-xs py-4">No saved items in wishlist.</p>';
+            } else {
+                wishlist.forEach(id => {
+                    const p = products.find(prod => prod.id === id);
+                    if (p) {
+                        container.innerHTML += `
+                            <div class="flex items-center justify-between bg-brand-dark p-3 rounded-xl border border-brand-border">
+                                <div class="flex items-center gap-3">
+                                    <img src="${p.image}" class="w-12 h-12 object-contain bg-brand-card rounded">
+                                    <div>
+                                        <h4 class="text-white text-xs font-bold">${p.name}</h4>
+                                        <span class="text-brand-orange text-xs">Rs. ${p.price.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                                <button onclick="addToCart(${p.id}); toggleWishlistModal();" class="px-3 py-1.5 bg-brand-blue text-brand-dark font-bold text-xs rounded-lg">Add to Cart</button>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            modal.classList.toggle('opacity-0');
+            modal.classList.toggle('pointer-events-none');
+        }
+
+        function openCheckoutModal() {
+            if (cart.length === 0) {
+                showToast('Your cart is empty!', 'error');
+                return;
+            }
+            toggleCartDrawer();
+            const modal = document.getElementById('checkoutModal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeCheckoutModal() {
+            const modal = document.getElementById('checkoutModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function handleOrderSubmission(e) {
+            const orderSummary = cart.map(i => `${i.name} (Qty: ${i.qty})`).join(', ');
+            const totalPayable = document.getElementById('cartTotal').innerText;
+            
+            document.getElementById('hiddenOrderDetails').value = orderSummary;
+            document.getElementById('hiddenTotalAmount').value = totalPayable;
+            
+            showToast('Order successfully submitted via Formspree!', 'success');
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `px-4 py-2.5 rounded-xl text-xs font-bold text-white shadow-lg transition-all transform translate-y-2 ${type === 'success' ? 'bg-brand-orange' : 'bg-brand-blue text-brand-dark'}`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info mr-1"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+
+        // Initialize Catalog Render on Load
+        window.onload = () => {
+            renderProducts(products);
+        };
+    </script>
+</body>
+</html>
